@@ -9,16 +9,13 @@ function game_start(){
 
     $choice = readline(">> ");
 
-    if ($choice === "1"){
-        echo "Start a new game";
-    } elseif ($choice === "2"){
-        echo "Load game";
-    } elseif ($choice === "3"){
-        exit();
-    } else {
-        echo "Invalid choice. Please try again\n";
+    if ($choice != "1") {
+        echo "sorry brah, you made a bad choice.\n";
         game_start();
+    } else {
+        echo "Game will now begin!";
     }
+
 }
 
 game_start();
