@@ -9,7 +9,7 @@ function game_start(){
 
     $choice = readline(">> ");
 
-    if ($choice != "1") {
+    if ($choice !== "1") {
         echo "sorry brah, you made a bad choice.\n";
         game_start();
     } else {
