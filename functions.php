@@ -29,31 +29,44 @@ function game_start(){
     } while (!$validChoice);
 }
 
-function new_game(){
+function new_game() {
     $playerInfo = array();
 
     echo "Welcome to your new adventure!\n";
     $playerInfo['name'] = readline("Enter your name: ");
 
+    $validClasses = ['Warrior', 'Mage', 'Archer', 'Thief'];
+    $validRaces = ['Human', 'Elf', 'Dwarf', 'Orc'];
 
     echo "Choose your class:\n";
-    echo "Warrior\n";
-    echo "Mage\n";
-    echo "Archer\n";
-    echo "Thief\n";
-    $playerInfo['class'] = readline("Choose your class: ");
+    foreach ($validClasses as $classOption) {
+        echo "$classOption\n";
+    }
+    $classChoice = readline("Choose your class: ");
+
+    if (!in_array($classChoice, $validClasses)) {
+        echo "Sorry, that is not one of the listed choices.\n";
+        return;
+    }
 
     echo "Choose your race:\n";
-    echo "Human\n";
-    echo "Elf\n";
-    echo "Dwarf\n";
-    echo "Orc\n";
-    $playerInfo['race'] = readline("Choose your race: ");
+    foreach ($validRaces as $raceOption) {
+        echo "$raceOption\n";
+    }
+    $raceChoice = readline("Choose your race: ");
+
+    if (!in_array($raceChoice, $validRaces)) {
+        echo "Sorry, that is not one of the listed choices.\n";
+        return;
+    }
 
     echo "Your awesome new hero has been created!\n";
     echo "Name: " . $playerInfo['name'] . "\n";
-    echo "Class: " . $playerInfo['class'] . "\n";
-    echo "Race: " . $playerInfo['race'] . "\n";
+    echo "Class: " . $classChoice . "\n";
+    echo "Race: " . $raceChoice . "\n";
+
+    $playerInfo['class'] = $classChoice;
+    $playerInfo['race'] = $raceChoice;
 
     $saveFile = json_encode($playerInfo);
     $fileName = 'playerinfo.php';
