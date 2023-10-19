@@ -70,7 +70,7 @@ function new_game() {
     $playerInfo['class'] = $validClasses[$classChoice - 1];
     $playerInfo['race'] = $validRaces[$raceChoice - 1];
 
-    // Save the character data to a JSON file
+
     $fileName = 'player.json';
     file_put_contents($fileName, json_encode($playerInfo, JSON_PRETTY_PRINT));
 
@@ -82,7 +82,7 @@ function enter_world() {
         $playerInfo = json_decode(file_get_contents('player.json'), true);
 
         echo "Welcome, {$playerInfo['name']}!\n";
-        // Implement the logic for entering the game world here.
+
     } else {
         echo "No saved game found. Please start a new game.\n";
     }
