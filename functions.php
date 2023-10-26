@@ -77,7 +77,85 @@ function load_game(&$playerInfo) {
   }
 }
 
+/**
+ * Enters into the game world.
+ *
+ * @param $playerInfo
+ *  Player Information
+ *
+ * @return void
+ */
 function enter_world(&$playerInfo) {
    // The game begins
+
+    $validOptions = ['F', 'M', 'Y', 'T', 'C', 'V', 'S', 'Q'];
+
+    while (true) {
+        echo "\nMain Menu Options:\n";
+        echo "Fight at the Arena (F)\n";
+        echo "Maximus Death Store (M)\n";
+        echo "Ye Olde Inn (Y)\n";
+        echo "Train with your Master (T)\n";
+        echo "Challenge the legend Dampyiel (C)\n";
+        echo "View Stats (V)\n";
+        echo "Save Game (S)\n";
+        echo "Quit Game (Q)\n";
+
+        $choice = strtoupper(readline("Choose an option: "));
+
+        if (!in_array($choice, $validOptions)) {
+            echo "Invalid choice. Please select a valid option.\n";
+            continue;
+        }
+
+        switch ($choice) {
+            case 'F':
+                // fight function
+                echo "You chose to fight at the Arena.\n";
+                break;
+            case 'M':
+                // store function
+                echo "You chose Maximus Death Store.\n";
+                break;
+            case 'Y':
+                // inn function
+                echo "You chose Ye Olde Inn.\n";
+                break;
+            case 'T':
+                // train function
+                echo "You chose to train with your Master.\n";
+                break;
+            case 'C':
+                // challenge function
+                echo "You chose to challenge the legend Dampyiel.\n";
+                break;
+            case 'V':
+                echo "You chose to view your stats:\n";
+
+                // Define the primary stats
+                $attack = 100;
+                $defense = 100;
+                $hp = 100;
+                $mp = 100;
+
+                // Display the primary stats
+                echo "Primary Stats:\n";
+                echo "Attack: $attack\n";
+                echo "Defense: $defense\n";
+                echo "HP: $hp\n";
+                echo "MP: $mp\n";
+                break;
+            case 'S':
+                echo "You chose to save the game.\n";
+                $playerData = json_encode($playerInfo, JSON_PRETTY_PRINT);
+                file_put_contents('player.json', $playerData);
+
+                echo "Game saved successfully!\n";
+                break;
+            case 'Q':
+                echo "Quitting the game. Goodbye!\n";
+                exit();
+        }
+    }
 }
 
