@@ -2,6 +2,8 @@
 
 include 'functions.php';
 
+// Initializing the player
+$player = [];
 $validChoice = true;
 
 do {

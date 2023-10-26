@@ -1,9 +1,7 @@
 <?php
 
-function new_game() {
+function new_game($playerInfo) {
     do {
-        $playerInfo = array();
-
         echo "Welcome to your new adventure!\n";
         $playerInfo['name'] = readline("Enter your name: ");
 
