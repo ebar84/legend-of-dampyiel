@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Begins a new game.
+ *
+ * @param $playerInfo
+ *   Player information
+ *
+ * @return void
+ */
 function new_game(&$playerInfo) {
     do {
         echo "Welcome to your new adventure!\n";
@@ -51,6 +59,14 @@ function new_game(&$playerInfo) {
     enter_world($playerInfo);
 }
 
+/**
+ * Loads a saved game.
+ *
+ * @param $playerInfo
+ *   Player information
+ *
+ * @return void
+ */
 function load_game(&$playerInfo) {
   if (file_exists('player.json')) {
     $playerInfo = json_decode(file_get_contents('player.json'), true);
@@ -65,5 +81,4 @@ function enter_world(&$playerInfo) {
    // The game begins
 
 }
-
 
