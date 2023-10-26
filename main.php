@@ -3,7 +3,7 @@
 include 'functions.php';
 
 // Initializing the player
-$player = [];
+$playerInfo = [];
 $validChoice = true;
 
 do {
@@ -16,11 +16,10 @@ do {
 
     switch ($choice) {
         case "1":
-            echo "Your game is beginning\n";
-            echo new_game();
+            new_game($playerInfo);
             break;
         case "2":
-            echo "Your game is now loading\n";
+            load_player($playerInfo);
             break;
         case "3":
             echo "The game will now exit\n";
@@ -30,5 +29,3 @@ do {
             echo "Bad choice, brah. Please choose 1, 2, or 3\n";
     }
 } while (!$validChoice);
-
-

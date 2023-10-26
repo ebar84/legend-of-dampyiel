@@ -1,6 +1,6 @@
 <?php
 
-function new_game($playerInfo) {
+function new_game(&$playerInfo) {
     do {
         echo "Welcome to your new adventure!\n";
         $playerInfo['name'] = readline("Enter your name: ");
@@ -50,19 +50,23 @@ function new_game($playerInfo) {
     $fileName = 'player.json';
     file_put_contents($fileName, json_encode($playerInfo, JSON_PRETTY_PRINT));
 
-    echo "Character data has been saved!\n";
+    echo "Character has been saved!\n";
+    enter_world($playerInfo);
 }
 
-function enter_world() {
-    if (file_exists('player.json')) {
-        $playerInfo = json_decode(file_get_contents('player.json'), true);
-
-        echo "Welcome, {$playerInfo['name']}!\n";
-
-    } else {
-        echo "No saved game found. Please start a new game.\n";
-    }
+function load_game(&$playerInfo) {
+  if (file_exists('player.json')) {
+    $playerInfo = json_decode(file_get_contents('player.json'), true);
+    enter_world($playerInfo);
+  } else {
+    echo "No saved game found. Starting a new game.\n";
+    new_game($playerInfo);
+  }
 }
 
+function enter_world(&$playerInfo) {
+   // The game begins
+
+}
 
 
