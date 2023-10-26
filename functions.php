@@ -79,6 +79,5 @@ function load_game(&$playerInfo) {
 
 function enter_world(&$playerInfo) {
    // The game begins
-
 }
 
