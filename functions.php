@@ -8,9 +8,6 @@ function new_game(&$playerInfo) {
         $validClasses = ['Warrior', 'Mage', 'Archer', 'Thief'];
         $validRaces = ['Human', 'Elf', 'Dwarf', 'Orc'];
 
-        $classChoice = 0;
-        $raceChoice = 0;
-
         do {
             echo "Choose your class:\n";
             for ($i = 0; $i < count($validClasses); $i++) {
