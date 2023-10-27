@@ -23,8 +23,34 @@ function banner() {
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣄⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠃⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠙⠛⠛⠛⠋⠉⠁⠀⠀⠀⠀⠀\n
-\t\033[34mWelcome to the Legends of Dampyiel\033[0m\n\n";
+\t\033[34mWelcome to the Legends of Dampyiel\033[32m\n\n";
 
+}
+
+function render_choice($choice) {
+  return "(\033[93m" . $choice . "\033[32m)";
+}
+
+function render_white($text) {
+  return "\033[97m" . $text . "\033[32m";
+}
+
+function render_border() {
+  $border = "-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-";
+  $new_border = '';
+
+  $i = 0;
+  foreach (str_split($border) as $t) {
+    if ($i % 2) {
+      $new_border .= "\033[93m" . $t;
+    }
+    else {
+      $new_border .= "\033[92m" . $t;
+    }
+    $i++;
+  }
+
+  return $new_border . "\033[32m\n";
 }
 
 /**
@@ -152,15 +178,18 @@ function enter_world(&$playerInfo) {
     $validOptions = ['F', 'M', 'Y', 'T', 'C', 'V', 'S', 'Q'];
 
     do {
-        echo "\nMain Menu Options:\n";
-        echo "(F)ight at the Arena\n";
-        echo "(M)aximus Death Store\n";
-        echo "(Y)e Olde Inn\n";
-        echo "(T)rain with your Master\n";
-        echo "(C)hallenge the legend Dampyiel\n";
-        echo "(V)iew Stats\n";
-        echo "(S)ave Game\n";
-        echo "(Q)uit Game\n";
+        echo render_white("\nLegend of Dampyiel:\n");
+        echo render_border();
+        echo "The streets are crowded with mercenaries, thieves, and other unsavory types.\n\n";
+        echo render_choice("F") . "ight at the Arena\t\t\t";
+        echo render_choice("M") . "aximus Death Store\n";
+        echo render_choice("Y") . "e Olde Inn\t\t\t\t";
+        echo render_choice("T") . "rain with your Master\n";
+        echo render_choice("C") . "hallenge the legend Dampyiel\t\t";
+        echo render_choice("V") . "iew Stats\n";
+        echo render_choice("S") . "ave Game\t\t\t\t";
+        echo render_choice("Q") . "uit Game\n";
+        echo render_border();
 
         $choice = strtoupper(readline("Choose an option: "));
 
