@@ -19,11 +19,11 @@ do {
             new_game($playerInfo);
             break;
         case "2":
-            load_player($playerInfo);
+            load_game($playerInfo);
             break;
         case "3":
             echo "The game will now exit\n";
-            exit();
+            quit_game();
         default:
             $validChoice = false;
             echo "Bad choice, brah. Please choose 1, 2, or 3\n";
