@@ -6,11 +6,13 @@ include 'functions.php';
 $playerInfo = [];
 $validChoice = true;
 
+banner();
+
 do {
-    echo "Please make a choice\n
-            1.) Start a new game\n
-            2.) Load Game\n
-            3.) Quit\n";
+    echo "Please make a choice\n";
+    echo "1.) Start a new game\n";
+    echo "2.) Load Game\n";
+    echo "3.) Quit\n";
 
     $choice = readline(">> ");
 
