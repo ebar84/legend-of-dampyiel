@@ -178,14 +178,14 @@ function enter_world(&$playerInfo) {
     $validOptions = ['F', 'M', 'Y', 'T', 'C', 'V', 'S', 'Q'];
 
     do {
-        echo render_white("\nLegend of Dampyiel:\n");
+        echo render_white("\nLegend of Dampyiel -") . " The Town Square\n";
         echo render_border();
         echo "The streets are crowded with mercenaries, thieves, and other unsavory types.\n\n";
         echo render_choice("F") . "ight at the Arena\t\t\t";
         echo render_choice("M") . "aximus Death Store\n";
         echo render_choice("Y") . "e Olde Inn\t\t\t\t";
         echo render_choice("T") . "rain with your Master\n";
-        echo render_choice("C") . "hallenge the legend Dampyiel\t\t";
+        echo render_choice("C") . "hallenge the legendary Dampyiel\t\t";
         echo render_choice("V") . "iew Stats\n";
         echo render_choice("S") . "ave Game\t\t\t\t";
         echo render_choice("Q") . "uit Game\n";
