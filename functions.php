@@ -191,31 +191,29 @@ function display_main_menu($validOptions) {
  */
 function enter_world(&$playerInfo) {
     $validOptions = ['F', 'M', 'Y', 'T', 'C', 'V', 'L', 'S', 'Q'];
+    $location = 'The Town Square';
 
-    $fullMenu = "Full Menu:\n" .
-        render_choice("F") . "ight at the Arena\t\t\t" .
-        render_choice("M") . "aximus Death Store\n" .
-        render_choice("Y") . "e Olde Inn\t\t\t\t" .
-        render_choice("T") . "rain with your Master\n" .
-        render_choice("C") . "hallenge the legendary Dampyiel\t\t" .
-        render_choice("V") . "iew Stats\t\t\t\t" .
-        render_choice("S") . "ave Game\t\t\t\t" .
-        render_choice("Q") . "uit Game\n";
+    $fullMenu = render_white("\nLegend of Dampyiel - ") . $location . "\n" .
+      render_border() . "The streets are crowded with mercenaries, thieves, and other unsavory types.\n\n" .
+      render_choice("F") . "ight at the Arena\t\t\t" .
+      render_choice("M") . "aximus Death Store\n" .
+      render_choice("Y") . "e Olde Inn\t\t\t\t" .
+      render_choice("T") . "rain with your Master\n" .
+      render_choice("C") . "hallenge the legendary Dampyiel\t" .
+      render_choice("V") . "iew Stats\t\n" .
+      render_choice("S") . "ave Game\t\t\t\t" .
+      render_choice("Q") . "uit Game\n" .
+      render_border();
 
-    // Initial menu
-    echo render_white("\nLegend of Dampyiel -") . " The Town Square\n";
-    echo render_border();
-    echo "The streets are crowded with mercenaries, thieves, and other unsavory types.\n\n";
-    echo "Choose an option or enter '?' for the full menu:\n";
-    echo "Available options: " . implode(', ', $validOptions) . "\n";
-    echo render_border();
+    echo $fullMenu;
 
     do {
+        echo $location . " (? for menu)\n";
+        echo "(" . implode(', ', $validOptions) . ")\n";
         echo "Your command, " . $playerInfo['name'] . "? : ";
         $choice = strtoupper(readline());
 
-        if ($choice === "?") {
-            // Display the full menu
+        if ($choice == '?') {
             echo $fullMenu;
             continue;
         }
@@ -255,8 +253,6 @@ function enter_world(&$playerInfo) {
                     echo "Quitting the game. Goodbye!\n";
                     quit_game();
             }
-        } else {
-            echo "Invalid choice. Please select a valid option or enter '?' to see the full menu.\n";
         }
     } while ($choice !== 'Q');
 }
