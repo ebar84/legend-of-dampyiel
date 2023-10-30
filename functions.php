@@ -167,21 +167,6 @@ function quit_game() {
 }
 
 /**
- * Chooses to display the main menu
- *
- *
- * @param $validOptions
- *  Options that are valid
- *
- * @return void
- */
-function display_main_menu($validOptions) {
-    echo "The Town Square (? for menu)\n";
-    echo "(" . implode(",", $validOptions) . ")\n";
-    echo "Your command, <Player Name>? : ";
-}
-
-/**
  * Enters into the game world.
  *
  * @param $playerInfo
