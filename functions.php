@@ -167,6 +167,21 @@ function quit_game() {
 }
 
 /**
+ * Chooses to display the main menu
+ *
+ *
+ * @param $validOptions
+ *  Options that are valid
+ *
+ * @return void
+ */
+function display_main_menu($validOptions) {
+    echo "The Town Square (? for menu)\n";
+    echo "(" . implode(",", $validOptions) . ")\n";
+    echo "Your command, <Player Name>? : ";
+}
+
+/**
  * Enters into the game world.
  *
  * @param $playerInfo
@@ -175,63 +190,73 @@ function quit_game() {
  * @return void
  */
 function enter_world(&$playerInfo) {
-    $validOptions = ['F', 'M', 'Y', 'T', 'C', 'V', 'S', 'Q'];
+    $validOptions = ['F', 'M', 'Y', 'T', 'C', 'V', 'L', 'S', 'Q'];
+
+    $fullMenu = "Full Menu:\n" .
+        render_choice("F") . "ight at the Arena\t\t\t" .
+        render_choice("M") . "aximus Death Store\n" .
+        render_choice("Y") . "e Olde Inn\t\t\t\t" .
+        render_choice("T") . "rain with your Master\n" .
+        render_choice("C") . "hallenge the legendary Dampyiel\t\t" .
+        render_choice("V") . "iew Stats\t\t\t\t" .
+        render_choice("S") . "ave Game\t\t\t\t" .
+        render_choice("Q") . "uit Game\n";
+
+    // Initial menu
+    echo render_white("\nLegend of Dampyiel -") . " The Town Square\n";
+    echo render_border();
+    echo "The streets are crowded with mercenaries, thieves, and other unsavory types.\n\n";
+    echo "Choose an option or enter '?' for the full menu:\n";
+    echo "Available options: " . implode(', ', $validOptions) . "\n";
+    echo render_border();
 
     do {
-        echo render_white("\nLegend of Dampyiel -") . " The Town Square\n";
-        echo render_border();
-        echo "The streets are crowded with mercenaries, thieves, and other unsavory types.\n\n";
-        echo render_choice("F") . "ight at the Arena\t\t\t";
-        echo render_choice("M") . "aximus Death Store\n";
-        echo render_choice("Y") . "e Olde Inn\t\t\t\t";
-        echo render_choice("T") . "rain with your Master\n";
-        echo render_choice("C") . "hallenge the legendary Dampyiel\t\t";
-        echo render_choice("V") . "iew Stats\n";
-        echo render_choice("S") . "ave Game\t\t\t\t";
-        echo render_choice("Q") . "uit Game\n";
-        echo render_border();
+        echo "Your command, " . $playerInfo['name'] . "? : ";
+        $choice = strtoupper(readline());
 
-        $choice = strtoupper(readline("Choose an option: "));
-
-        if (!in_array($choice, $validOptions)) {
-            echo "Invalid choice. Please select a valid option.\n";
+        if ($choice === "?") {
+            // Display the full menu
+            echo $fullMenu;
             continue;
         }
 
-        switch ($choice) {
-            case 'F':
-                // fight function
-                echo "You chose to fight at the Arena.\n";
-                break;
-            case 'M':
-                // store function
-                echo "You chose Maximus Death Store.\n";
-                break;
-            case 'Y':
-                // inn function
-                echo "You chose Ye Olde Inn.\n";
-                break;
-            case 'T':
-                // train function
-                echo "You chose to train with your Master.\n";
-                break;
-            case 'C':
-                // challenge function
-                echo "You chose to challenge the legend Dampyiel.\n";
-                break;
-            case 'V':
-                echo "You chose to view your stats:\n";
-                view_stats($playerInfo);
-                break;
-            case 'S':
-                echo "You chose to save the game.\n";
-                save_game($playerInfo);
-                echo "Game saved successfully!\n";
-                break;
-            case 'Q':
-                echo "Quitting the game. Goodbye!\n";
-                quit_game();
+        if (in_array($choice, $validOptions)) {
+            switch ($choice) {
+                case 'F':
+                    // fight function
+                    echo "You chose to fight at the Arena.\n";
+                    break;
+                case 'M':
+                    // store function
+                    echo "You chose Maximus Death Store.\n";
+                    break;
+                case 'Y':
+                    // inn function
+                    echo "You chose Ye Olde Inn.\n";
+                    break;
+                case 'T':
+                    // train function
+                    echo "You chose to train with your Master.\n";
+                    break;
+                case 'C':
+                    // challenge function
+                    echo "You chose to challenge the legend Dampyiel.\n";
+                    break;
+                case 'V':
+                    echo "You chose to view your stats:\n";
+                    view_stats($playerInfo);
+                    break;
+                case 'S':
+                    echo "You chose to save the game.\n";
+                    save_game($playerInfo);
+                    echo "Game saved successfully!\n";
+                    break;
+                case 'Q':
+                    echo "Quitting the game. Goodbye!\n";
+                    quit_game();
+            }
+        } else {
+            echo "Invalid choice. Please select a valid option or enter '?' to see the full menu.\n";
         }
     } while ($choice !== 'Q');
 }
-
