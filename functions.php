@@ -62,52 +62,26 @@ function render_border() {
  * @return void
  */
 function new_game(&$playerInfo) {
-    do {
-        echo "Welcome to your new adventure!\n";
-        $playerInfo['name'] = readline("Enter your name: ");
-
-        $validClasses = ['Warrior', 'Mage', 'Archer', 'Thief'];
-        $validRaces = ['Human', 'Elf', 'Dwarf', 'Orc'];
-
-        do {
-            echo "Choose your class:\n";
-            for ($i = 0; $i < count($validClasses); $i++) {
-                echo ($i + 1) . ". {$validClasses[$i]}\n";
-            }
-            $classChoice = (int)readline("Choose your class (enter the number): ");
-
-            if ($classChoice < 1 || $classChoice > count($validClasses)) {
-                echo "Invalid choice. Please select a valid class number.\n";
-            }
-        } while ($classChoice < 1 || $classChoice > count($validClasses));
-
-        do {
-            echo "Choose your race:\n";
-            for ($i = 0; $i < count($validRaces); $i++) {
-                echo ($i + 1) . ". {$validRaces[$i]}\n";
-            }
-            $raceChoice = (int)readline("Choose your race (enter the number): ");
-
-            if ($raceChoice < 1 || $raceChoice > count($validRaces)) {
-                echo "Invalid choice. Please select a valid race number.\n";
-            }
-        } while ($raceChoice < 1 || $raceChoice > count($validRaces));
-
-
-        echo "Your awesome new hero has been created!\n";
-        echo "Name: " . $playerInfo['name'] . "\n";
-        echo "Class: " . $validClasses[$classChoice - 1] . "\n";
-        echo "Race: " . $validRaces[$raceChoice - 1] . "\n";
-
-        $playerInfo['class'] = $validClasses[$classChoice - 1];
-        $playerInfo['race'] = $validRaces[$raceChoice - 1];
-
-        $confirm = strtolower(readline("Is this what you want? (yes/no): "));
-    } while ($confirm !== 'yes');
+    $playerInfo['name'] = readline("Welcome to your new adventure!\nEnter your name: ");
+    $playerInfo['level'] = 1;
+    $playerInfo['hp'] = 10;
+    $playerInfo['mp'] = 10;
+    $playerInfo['experience'] = 0;
+    $playerInfo['arena_fights'] = 25;
+    $playerInfo['gold'] = 100;
+    $playerInfo['charm'] = 0;
+    $playerInfo['bank'] = 0;
+    $playerInfo['attack'] = 1;
+    $playerInfo['defense'] = 1;
+    $playerInfo['weapon'] = 0;
+    $playerInfo['armor'] = 0;
+    $playerInfo['inventory'] = [];
 
     save_game($playerInfo);
 
-    echo "Character has been saved!\n";
+    echo "Your character has been created and saved!\n";
+    echo "Here are your character's stats:\n";
+    view_stats($playerInfo);
     enter_world($playerInfo);
 }
 
@@ -139,8 +113,18 @@ function load_game(&$playerInfo) {
  */
 function view_stats($playerInfo) {
     echo "Player Name: " . $playerInfo['name'] . "\n";
-    echo "Class: " . $playerInfo['class'] . "\n";
-    echo "Race: " . $playerInfo['race'] . "\n";
+    echo "Level: " . $playerInfo['level'] . "\n";
+    echo "HP: " . $playerInfo['hp'] . "\n";
+    echo "MP: " . $playerInfo['mp'] . "\n";
+    echo "Experience: " . $playerInfo['experience'] . "\n";
+    echo "Arena Fights: " . $playerInfo['arena_fights'] . "\n";
+    echo "Gold: " . $playerInfo['gold'] . "\n";
+    echo "Charm: " . $playerInfo['charm'] . "\n";
+    echo "Bank: " . $playerInfo['bank'] . "\n";
+    echo "Attack: " . $playerInfo['attack'] . "\n";
+    echo "Defense: " . $playerInfo['defense'] . "\n";
+    echo "Weapon: " . $playerInfo['weapon'] . "\n";
+    echo "Armor: " . $playerInfo['armor'] . "\n";
 }
 
 
@@ -153,8 +137,19 @@ function view_stats($playerInfo) {
  * @return void
  */
 function save_game($playerInfo) {
-    $playerData = json_encode($playerInfo, JSON_PRETTY_PRINT);
-    file_put_contents('player.json', $playerData);
+    echo "Do you want to save the game? (yes/no): ";
+    $confirmation = strtolower(readline());
+
+    if ($confirmation === 'yes') {
+        $playerData = json_encode($playerInfo, JSON_PRETTY_PRINT);
+        file_put_contents('player.json', $playerData);
+        echo "Game saved successfully!\n";
+    } elseif ($confirmation === 'no') {
+        return;
+    } else {
+        echo "Invalid response. Please enter 'yes' or 'no'.\n";
+        save_game($playerInfo);
+    }
 }
 
 /**
@@ -163,7 +158,17 @@ function save_game($playerInfo) {
  * @return void
  */
 function quit_game() {
-    exit();
+    echo "Are you sure you want to quit? (yes/no): ";
+    $confirmation = strtolower(readline());
+
+    if ($confirmation === 'yes') {
+        exit();
+    } elseif ($confirmation === 'no') {
+        return;
+    } else {
+        echo "Invalid response. Please enter 'yes' or 'no'.\n";
+        quit_game();
+    }
 }
 
 /**
@@ -194,16 +199,17 @@ function enter_world(&$playerInfo) {
     $location = 'The Town Square';
 
     $fullMenu = render_white("\nLegend of Dampyiel - ") . $location . "\n" .
-      render_border() . "The streets are crowded with mercenaries, thieves, and other unsavory types.\n\n" .
-      render_choice("F") . "ight at the Arena\t\t\t" .
-      render_choice("M") . "aximus Death Store\n" .
-      render_choice("Y") . "e Olde Inn\t\t\t\t" .
-      render_choice("T") . "rain with your Master\n" .
-      render_choice("C") . "hallenge the legendary Dampyiel\t" .
-      render_choice("V") . "iew Stats\t\n" .
-      render_choice("S") . "ave Game\t\t\t\t" .
-      render_choice("Q") . "uit Game\n" .
-      render_border();
+        render_border() . "The streets are crowded with mercenaries, thieves, and other unsavory types.\n\n" .
+        render_choice("F") . "ight at the Arena\t\t\t" .
+        render_choice("M") . "aximus Death Store\n" .
+        render_choice("Y") . "e Olde Inn\t\t\t\t" .
+        render_choice("T") . "rain with your Master\n" .
+        render_choice("C") . "hallenge the legendary Dampyiel\t" .
+        render_choice("V") . "iew Stats\t\n" .
+        render_choice("L") . "oad Game\t\t\t\t" .
+        render_choice("S") . "ave Game\t\t\t\t" .
+        render_choice("Q") . "uit Game\n" .
+        render_border();
 
     echo $fullMenu;
 
@@ -248,6 +254,10 @@ function enter_world(&$playerInfo) {
                     echo "You chose to save the game.\n";
                     save_game($playerInfo);
                     echo "Game saved successfully!\n";
+                    break;
+                case 'L':
+                    echo "You chose to load the game.\n";
+                    load_game($playerInfo);
                     break;
                 case 'Q':
                     echo "Quitting the game. Goodbye!\n";
