@@ -62,7 +62,7 @@ function render_border() {
  * @return void
  */
 function new_game(&$playerInfo) {
-    $playerInfo['name'] = readline("Welcome to your new adventure!\nEnter your name: ");
+    $playerInfo['name'] = readline("Welcome to your new adventure! Enter your name: ");
     $playerInfo['level'] = 1;
     $playerInfo['hp'] = 10;
     $playerInfo['mp'] = 10;
@@ -77,7 +77,7 @@ function new_game(&$playerInfo) {
     $playerInfo['armor'] = 0;
     $playerInfo['inventory'] = [];
 
-    save_game($playerInfo);
+    save_game($playerInfo, false);
 
     echo "Your character has been created and saved!\n";
     echo "Here are your character's stats:\n";
@@ -93,14 +93,30 @@ function new_game(&$playerInfo) {
  *
  * @return void
  */
-function load_game(&$playerInfo) {
-  if (file_exists('player.json')) {
-    $playerInfo = json_decode(file_get_contents('player.json'), true);
-    enter_world($playerInfo);
-  } else {
-    echo "No saved game found. Starting a new game.\n";
-    new_game($playerInfo);
-  }
+function load_game(&$playerInfo, $prompt = true) {
+    do {
+        if ($prompt) {
+            $choice = strtolower(readline("Load a saved game? (yes/no): "));
+        }
+
+        if ($choice === 'yes' || !$prompt) {
+            if (file_exists('player.json')) {
+                $playerInfo = json_decode(file_get_contents('player.json'), true);
+                echo "Game loaded successfully!\n";
+                enter_world($playerInfo);
+                break;
+            } else {
+                echo "No saved game found. Starting a new game.\n";
+                new_game($playerInfo);
+                break;
+            }
+        } elseif ($choice === 'no') {
+            enter_world($playerInfo);
+            break;
+        } else {
+            echo "Invalid choice. Please enter 'yes' to load the game or 'no' to continue your current game.\n";
+        }
+    } while (true);
 }
 
 /**
@@ -136,20 +152,28 @@ function view_stats($playerInfo) {
  *
  * @return void
  */
-function save_game($playerInfo) {
-    echo "Do you want to save the game? (yes/no): ";
-    $confirmation = strtolower(readline());
+function save_game($playerInfo, $prompt = true) {
+    do {
+        if ($prompt) {
+            echo "Do you want to save the game? (yes/no): ";
+            $confirmation = strtolower(readline());
 
-    if ($confirmation === 'yes') {
-        $playerData = json_encode($playerInfo, JSON_PRETTY_PRINT);
-        file_put_contents('player.json', $playerData);
-        echo "Game saved successfully!\n";
-    } elseif ($confirmation === 'no') {
-        return;
-    } else {
-        echo "Invalid response. Please enter 'yes' or 'no'.\n";
-        save_game($playerInfo);
-    }
+            if ($confirmation === 'yes') {
+                $playerData = json_encode($playerInfo, JSON_PRETTY_PRINT);
+                file_put_contents('player.json', $playerData);
+                echo "Game saved successfully!\n";
+                break;
+            } elseif ($confirmation === 'no') {
+                break;
+            } else {
+                echo "Invalid response. Please enter 'yes' or 'no'.\n";
+            }
+        } else {
+            $playerData = json_encode($playerInfo, JSON_PRETTY_PRINT);
+            file_put_contents('player.json', $playerData);
+            break;
+        }
+    } while (true);
 }
 
 /**
