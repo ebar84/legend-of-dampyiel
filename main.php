@@ -1,6 +1,7 @@
 <?php
 
 include 'functions.php';
+include 'weapons.php';
 
 // Initializing the player
 $playerInfo = [];

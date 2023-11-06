@@ -1,5 +1,7 @@
 <?php
 
+include 'weapons.php';
+
 function banner() {
   echo "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\033[31m⢀⣀⣀⣠⣤⣤⣤⣤⣤⣤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣶⡄⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣠⣾⣿⣿⣶⣦⣄⡀⠀⠀⠀
@@ -180,17 +182,22 @@ function save_game($playerInfo, $prompt = TRUE) {
  *
  * @return void
  */
-function quit_game() {
-    echo "Are you sure you want to quit? (yes/no): ";
-    $confirmation = strtolower(readline());
+function quit_game($prompt = true) {
+    $quit_game = true;
 
-    if ($confirmation === 'yes') {
+    if ($prompt) {
+        do {
+            echo "Are you sure you want to quit? (yes/no): ";
+            $confirmation = strtolower(readline());
+
+            if ($confirmation === 'no') {
+                $quit_game = false;
+            }
+        } while ($confirmation !== 'yes' && $confirmation !== 'no');
+    }
+
+    if ($quit_game) {
         exit();
-    } elseif ($confirmation === 'no') {
-        return;
-    } else {
-        echo "Invalid response. Please enter 'yes' or 'no'.\n";
-        quit_game();
     }
 }
 
@@ -239,7 +246,7 @@ function enter_world(&$playerInfo) {
                     echo "You chose to fight at the Arena.\n";
                     break;
                 case 'M':
-                    // store function
+                    weapon_store($playerInfo);
                     echo "You chose Maximus Death Store.\n";
                     break;
                 case 'Y':
@@ -269,4 +276,78 @@ function enter_world(&$playerInfo) {
             }
         }
     } while ($choice !== 'Q');
+}
+
+function weapon_store(&$playerInfo) {
+    echo "Welcome to Maximus Death Store!\n";
+    echo "What would you like to do?\n";
+    echo "1. Buy inventory\n";
+    echo "2. Leave store\n";
+
+    $choice = (int)readline("Enter your choice: ");
+
+    if ($choice === 1) {
+        buy_inventory($playerInfo);
+    } elseif ($choice === 2) {
+        echo "Leaving the store.\n";
+    } else {
+        echo "Invalid choice. Please select a valid option.\n";
+        weapon_store($playerInfo);
+    }
+}
+
+function buy_inventory(&$playerInfo) {
+    echo "What would you like to buy?\n";
+    echo "1. Weapons\n";
+    echo "2. Armor\n";
+    echo "3. Leave\n";
+
+    $choice = (int)readline("Enter your choice: ");
+
+    if ($choice === 1) {
+        display_inventory("Weapons", $playerInfo['weapons'], $playerInfo);
+    } elseif ($choice === 2) {
+        display_inventory("Armor", $playerInfo['armor'], $playerInfo);
+    } elseif ($choice === 3) {
+        echo "Leaving the store.\n";
+    } else {
+        echo "Invalid choice. Please select a valid option.\n";
+        buy_inventory($playerInfo);
+    }
+}
+
+function display_inventory($category, $inventory, &$playerInfo) {
+    echo "$category available for purchase:\n";
+    $playerGold = $playerInfo['gold'];
+
+    for ($i = 0; $i < count($inventory); $i++) {
+        $item = $inventory[$i];
+        $cost = $item['Cost'];
+        echo ($i + 1) . ". " . $item['Name'] . " - {$cost} gold\n";
+    }
+    echo (count($inventory) + 1) . ". Leave\n";
+
+    $choice = (int)readline("Enter the number of the $category you want to purchase: ");
+
+    if ($choice > 0 && $choice <= count($inventory)) {
+        $selectedItem = $inventory[$choice - 1];
+        $cost = $selectedItem['Cost'];
+
+        if ($playerGold >= $cost) {
+            $playerGold -= $cost;
+            $playerInfo[$category] = $selectedItem;
+            $playerInfo['gold'] = $playerGold;
+
+            echo "You purchased a {$selectedItem['Name']} for {$cost} gold!\n";
+        } else {
+            echo "You don't have enough gold to purchase this item.\n";
+        }
+
+        weapon_store($playerInfo, $playerInfo['weapon'], $playerInfo['armor']);
+    } elseif ($choice === count($inventory) + 1) {
+        echo "Leaving the store.\n";
+    } else {
+        echo "Invalid choice. Please select a valid option.\n";
+        display_inventory($category, $inventory, $playerInfo);
+    }
 }
