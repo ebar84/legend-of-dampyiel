@@ -1,0 +1,9 @@
+[
+    {
+        "ID": 1,
+        "Name": "Basic Shield",
+        "Defense": 5,
+        "Cost": 20,
+        "Sell Cost": 10
+    }
+]

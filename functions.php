@@ -303,7 +303,9 @@ function weapon_store(&$playerInfo) {
  *   Player information
  */
 function buy_inventory(&$playerInfo) {
-    while (true) {
+    $exit = false;
+
+    do {
         echo "What would you like to buy?\n";
         echo "1. Weapons\n";
         echo "2. Armor\n";
@@ -320,11 +322,12 @@ function buy_inventory(&$playerInfo) {
                 break;
             case 3:
                 echo "Leaving the store.\n";
-                return; // Return to the previous menu
+                $exit = true;
+                break;
             default:
                 echo "Invalid choice. Please select a valid option.\n";
         }
-    }
+    } while (!$exit);
 }
 
 
