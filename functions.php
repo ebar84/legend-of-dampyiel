@@ -1,6 +1,7 @@
 <?php
 
 include 'weapons.php';
+include 'armor.php';
 
 function banner() {
   echo "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\033[31m⢀⣀⣀⣠⣤⣤⣤⣤⣤⣤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -75,8 +76,8 @@ function new_game(&$playerInfo) {
     $playerInfo['bank'] = 0;
     $playerInfo['attack'] = 1;
     $playerInfo['defense'] = 1;
-    $playerInfo['weapon'] = 0;
-    $playerInfo['armor'] = 0;
+    $playerInfo['weapon'] = 1;
+    $playerInfo['armor'] = 1;
     $playerInfo['inventory'] = [];
 
     save_game($playerInfo, FALSE);
@@ -131,6 +132,7 @@ function load_game(&$playerInfo, $prompt = TRUE) {
  * @return void
  */
 function view_stats($playerInfo) {
+
     echo "Player Name: " . $playerInfo['name'] . "\n";
     echo "Level: " . $playerInfo['level'] . "\n";
     echo "HP: " . $playerInfo['hp'] . "\n";

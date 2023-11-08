@@ -1,11 +1,11 @@
 [
     {
         "ID": 1,
-        "Name": "Sword",
-        "Attack": 10,
-        "Defense": 5,
-        "Cost": 100,
-        "Sell Cost": 50
+        "Name": "Wooden Sword",
+        "Attack": 5,
+        "Defense": 2,
+        "Cost": 30,
+        "Sell Cost": 15
     },
     {
         "ID": 2,
@@ -46,5 +46,13 @@
         "Defense": 4,
         "Cost": 150,
         "Sell Cost": 75
+    },
+    {
+        "ID": 7,
+        "Name": "Sword",
+        "Attack": 10,
+        "Defense": 5,
+        "Cost": 100,
+        "Sell Cost": 50
     }
 ]
