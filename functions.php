@@ -1,8 +1,5 @@
 <?php
 
-include 'weapons.php';
-include 'armor.php';
-
 function banner() {
   echo "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\033[31m⢀⣀⣀⣠⣤⣤⣤⣤⣤⣤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣶⡄⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣠⣾⣿⣿⣶⣦⣄⡀⠀⠀⠀
@@ -76,7 +73,7 @@ function new_game(&$playerInfo) {
     $playerInfo['bank'] = 0;
     $playerInfo['attack'] = 1;
     $playerInfo['defense'] = 1;
-    $playerInfo['weapon'] = 1;
+    $playerInfo['weapon'] = 1;;
     $playerInfo['armor'] = 1;
     $playerInfo['inventory'] = [];
 
@@ -180,7 +177,7 @@ function save_game($playerInfo, $prompt = TRUE) {
 }
 
 /**
- * Exit's the game.
+ * Exits the game.
  *
  * @return void
  */
@@ -280,22 +277,38 @@ function enter_world(&$playerInfo) {
     } while ($choice !== 'Q');
 }
 
+/**
+ * Player enters the store
+ *
+ * @param $playerInfo
+ *    Player information
+ *
+ * @return void
+ */
+
 function weapon_store(&$playerInfo) {
-    echo "Welcome to Maximus Death Store!\n";
-    echo "What would you like to do?\n";
-    echo "1. Buy inventory\n";
-    echo "2. Leave store\n";
+    $exitStore = false;
 
-    $choice = (int)readline("Enter your choice: ");
+    do {
+        echo "Welcome to Maximus Death Store!\n";
+        echo "What would you like to do?\n";
+        echo "1. Buy inventory\n";
+        echo "2. Leave store\n";
 
-    if ($choice === 1) {
-        buy_inventory($playerInfo);
-    } elseif ($choice === 2) {
-        echo "Leaving the store.\n";
-    } else {
-        echo "Invalid choice. Please select a valid option.\n";
-        weapon_store($playerInfo);
-    }
+        $choice = (int)readline("Enter your choice: ");
+
+        switch ($choice) {
+            case 1:
+                buy_inventory($playerInfo);
+                break;
+            case 2:
+                echo "Leaving the store.\n";
+                $exitStore = true;
+                break;
+            default:
+                echo "Invalid choice. Please select a valid option.\n";
+        }
+    } while (!$exitStore);
 }
 
 /**
@@ -332,49 +345,67 @@ function buy_inventory(&$playerInfo) {
     } while (!$exit);
 }
 
-
+/**
+ * Display inventory available to buy
+ *
+ * @param $category
+ *    Category of weapons or armor
+ *
+ * @param $playerInfo
+ *    Player information
+ *
+ * @return void
+ */
 function display_inventory($category, &$playerInfo) {
-    $validOptions = [];
-    $inventory = [];
-
-    if ($category === 'Weapons') {
-        $inventory = json_decode(file_get_contents('weapons.json'), true);
-    } elseif ($category === 'Armor') {
-        $inventory = json_decode(file_get_contents('armor.json'), true);
-    } else {
-        echo "Invalid category.\n";
-        return;
-    }
-
-    // Build a list of valid options and print the inventory
-    foreach ($inventory as $key => $item) {
-        $validOptions[] = $key + 1;
-        echo ($key + 1) . ". " . $item['Name'] . " - Cost: " . $item['Cost'] . " gold\n";
-    }
-    $validOptions[] = 'back';
+    $exitInventory = false;
 
     do {
-        echo "Enter the number of the $category you want to purchase (or 'back' to return): ";
-        $choice = strtolower(readline());
+        $validOptions = [];
+        $inventory = [];
 
-        if ($choice === 'back') {
-            echo "Returning to the previous menu.\n";
+        if ($category === 'Weapons') {
+            $inventory = json_decode(file_get_contents('weapons.json'), true);
+        } elseif ($category === 'Armor') {
+            $inventory = json_decode(file_get_contents('armor.json'), true);
+        } else {
+            echo "Invalid category.\n";
             return;
         }
 
-        $choice = (int) $choice;
-    } while (!in_array($choice, $validOptions));
-
-    if ($choice > 0 && $choice <= count($inventory)) {
-        $selectedItem = $inventory[$choice - 1];
-        $cost = $selectedItem['Cost'];
-
-        if ($playerInfo['gold'] >= $cost) {
-            $playerInfo['gold'] -= $cost;
-            $playerInfo[$category] = $selectedItem;
-            echo "You purchased a {$selectedItem['Name']} for {$cost} gold!\n";
-        } else {
-            echo "You don't have enough gold to purchase this item.\n";
+        // Build a list of valid options and print the inventory
+        foreach ($inventory as $key => $item) {
+            $validOptions[] = $key + 1;
+            echo ($key + 1) . ". " . $item['Name'] . " - Cost: " . $item['Cost'] . " gold\n";
         }
-    }
+        $validOptions[] = 'back';
+
+        do {
+            echo "Enter the number of the $category you want to purchase (or 'R' to return): ";
+            $choice = strtolower(readline());
+
+            if ($choice === 'r') {
+                echo "Returning to the previous menu.\n";
+                $exitInventory = true;
+                break;
+            }
+
+            $choice = (int) $choice;
+
+            if ($choice > 0 && $choice <= count($inventory)) {
+                $selectedItem = $inventory[$choice - 1];
+                $cost = $selectedItem['Cost'];
+
+                if ($playerInfo['gold'] >= $cost) {
+                    $playerInfo['gold'] -= $cost;
+                    $playerInfo[$category] = $selectedItem;
+                    echo "You purchased a {$selectedItem['Name']} for {$cost} gold!\n";
+                    $exitInventory = true;
+                } else {
+                    echo "You don't have enough gold to purchase this item. Please choose another item or 'R' to return.\n";
+                }
+            } else {
+                echo "Invalid choice. Please select a valid option.\n";
+            }
+        } while (!$exitInventory);
+    } while (!$exitInventory);
 }
