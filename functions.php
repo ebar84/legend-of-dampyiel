@@ -129,7 +129,6 @@ function load_game(&$playerInfo, $prompt = TRUE) {
  * @return void
  */
 function view_stats($playerInfo) {
-
     echo "Player Name: " . $playerInfo['name'] . "\n";
     echo "Level: " . $playerInfo['level'] . "\n";
     echo "HP: " . $playerInfo['hp'] . "\n";
@@ -278,46 +277,12 @@ function enter_world(&$playerInfo) {
 }
 
 /**
- * Player enters the store
- *
- * @param $playerInfo
- *    Player information
- *
- * @return void
- */
-
-function weapon_store(&$playerInfo) {
-    $exitStore = false;
-
-    do {
-        echo "Welcome to Maximus Death Store!\n";
-        echo "What would you like to do?\n";
-        echo "1. Buy inventory\n";
-        echo "2. Leave store\n";
-
-        $choice = (int)readline("Enter your choice: ");
-
-        switch ($choice) {
-            case 1:
-                buy_inventory($playerInfo);
-                break;
-            case 2:
-                echo "Leaving the store.\n";
-                $exitStore = true;
-                break;
-            default:
-                echo "Invalid choice. Please select a valid option.\n";
-        }
-    } while (!$exitStore);
-}
-
-/**
  * Buy inventory, including weapons or armor.
  *
  * @param $playerInfo
  *   Player information
  */
-function buy_inventory(&$playerInfo) {
+function weapon_store(&$playerInfo) {
     $exit = false;
 
     do {
@@ -361,7 +326,6 @@ function display_inventory($category, &$playerInfo) {
 
     do {
         $validOptions = [];
-        $inventory = [];
 
         if ($category === 'Weapons') {
             $inventory = json_decode(file_get_contents('weapons.json'), true);
