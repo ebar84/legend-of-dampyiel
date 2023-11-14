@@ -87,8 +87,12 @@ function view_stats($playerInfo) {
     echo "Bank: " . $playerInfo['bank'] . "\n";
     echo "Attack: " . $playerInfo['attack'] . "\n";
     echo "Defense: " . $playerInfo['defense'] . "\n";
-    echo "Weapon: " . $playerInfo['weapon'] . "\n";
-    echo "Armor: " . $playerInfo['armor'] . "\n";
+
+    $weapon = load_item('weapons', $playerInfo['weapon']);
+    echo "Weapon: " . $weapon['Name'] . "\n";
+
+    $armor = load_item('armor', $playerInfo['armor']);
+    echo "Armor: " . $armor['Name'] . "\n";
 }
 
 
@@ -279,9 +283,9 @@ function display_inventory($category, &$playerInfo) {
         $validOptions = [];
 
         if ($category === 'Weapons') {
-            $inventory = json_decode(file_get_contents('weapons.json'), true);
+            $inventory = load_item('weapons');
         } elseif ($category === 'Armor') {
-            $inventory = json_decode(file_get_contents('armor.json'), true);
+            $inventory = load_item('armor');
         } else {
             echo "Invalid category.\n";
             return;
@@ -331,4 +335,19 @@ function display_inventory($category, &$playerInfo) {
             }
         } while (!$exitInventory);
     } while (!$exitInventory);
+}
+
+function load_item($type, $findItem = 0) {
+  $items = json_decode(file_get_contents($type. '.json'), TRUE);
+
+  if ($findItem == 0) {
+    return $items;
+  }
+  else {
+    foreach ($items as $item) {
+      if ($item['ID'] == $findItem) {
+        return $item;
+      }
+    }
+  }
 }
