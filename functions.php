@@ -1,57 +1,6 @@
 <?php
 
-function banner() {
-  echo "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\033[31m⢀⣀⣀⣠⣤⣤⣤⣤⣤⣤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣶⡄⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣠⣾⣿⣿⣶⣦⣄⡀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⣀⣴⣾⣿⣿⣿⣿⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣤⡀
-⠀⠀⠀⠀⠀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⠋⠉
-⠀⠀⠀⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠟⠛⢉⣉⣉⣉⣉⣉⡉⠙⠛⠻⠿⣿⠟⠋⠀⠀⠀⠀
-⠀⠀⢀⣤⣌⣻⣿⣿⣿⣿⣿⣿⠟⢉⣠⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⠄⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⠟⢁⣴⠿⠛⠋⣉⣁⣀⣀⣀⣉⡉⠛⠻⢿⡿⠃⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⢰⣿⣿⣿⣿⣿⣿⣿⠃⡴⠋\033[93m⣁⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣄\033[31m⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⣼⣿⣿⣿⣿⣿⣿⠃⠜\033[93m⢠⣾⣿⣿⣿⣿⣿⣿⡿⠿⠿⠛⠛⠛⠿⠿⢿⣆\033[31m⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⣿⣿⣿⣿⣿⣿⡟⠀\033[93m⢰⣿⣿⣿⡿⠛⢋⣁⣤⣤⣴⣶⣶⣶⣶⣶⣤⣤⣀⣴⣾\033[31m⠀⠀⠀⠀⠀⠀
-⠀⢿⣿⣿⣿⣿⣿⠇⠀\033[93m⣿⣿⣿⣿⠃⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿\033[31m⠀⠀⠀⠀⠀⠀
-⠀⣶⣿⣿⣿⣿⣿⠀\033[93m⢰⣿⣿⣿⡏⢰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿\033[31m⠀⠀⠀⠀⠀⠀
-⠀⣿⣿⣿⣿⣿⠇⠀\033[93m⢸⣿⣿⣿⢀⣿⣿⣿⣿⣿⣿⡿⠛⠋⠉⠉⠉⠛⢿⣿⣿⣿\033[31m⠀⠀⠀⠀⠀⠀
-⠀⣿⣿⣿⣿⠏⠀⠀\033[93m⢸⣿⣿⣷⣄⡙⢿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠀⠀⠈⢿⣿⣿\033[31m⠀⠀⠀⠀⠀⠀
-⣸⣿⡿⠟⠁⠀⠀⠀\033[93m⢸⣿⣿⣿⣿⣿⣄⠙⢿⣿⣿⣿⣿⣿⣷⣶⣤⡄⠀⢸⣿⣿\033[31m⠀⠀⠀⠀⠀⠀
-⠉⠀⠀⠀⠀⠀⠀⠀\033[93m⢸⣿⣿⣿⣿⣿⣿⣧⠈⢻⣿⣿⣿⣿⣿⣿⣿⡇⠀⢸⣿⣿\033[31m⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀\033[93m⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⢿⣿⣿⣿⣿⣿⣿⣿⡀⠀⠙⠿⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀\033[93m⢀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⡀⢸⣿⣿⣿⣿⣿⣿⣿⣷⡀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠙⠻⠿⣿⣿⣿⣿⣿⡿⠿⠛⠁⠀⣿⣿⣿⣿⣿⣿⣿⣿⣷⡀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣄⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠃⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠙⠛⠛⠛⠋⠉⠁⠀⠀⠀⠀⠀\n
-\t\033[34mWelcome to the Legends of Dampyiel\033[32m\n\n";
 
-}
-
-function render_choice($choice) {
-  return "(\033[93m" . $choice . "\033[32m)";
-}
-
-function render_white($text) {
-  return "\033[97m" . $text . "\033[32m";
-}
-
-function render_border() {
-  $border = "-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-";
-  $new_border = '';
-
-  $i = 0;
-  foreach (str_split($border) as $t) {
-    if ($i % 2) {
-      $new_border .= "\033[93m" . $t;
-    }
-    else {
-      $new_border .= "\033[92m" . $t;
-    }
-    $i++;
-  }
-
-  return $new_border . "\033[32m\n";
-}
 
 /**
  * Begins a new game.
@@ -73,15 +22,13 @@ function new_game(&$playerInfo) {
     $playerInfo['bank'] = 0;
     $playerInfo['attack'] = 1;
     $playerInfo['defense'] = 1;
-    $playerInfo['weapon'] = 1;;
+    $playerInfo['weapon'] = 1;
     $playerInfo['armor'] = 1;
     $playerInfo['inventory'] = [];
 
     save_game($playerInfo, FALSE);
 
-    echo "Your character has been created and saved!\n";
-    echo "Here are your character's stats:\n";
-    view_stats($playerInfo);
+    echo "Your character, {$playerInfo['name']}, has been created and saved!\n";
     enter_world($playerInfo);
 }
 
@@ -286,21 +233,25 @@ function weapon_store(&$playerInfo) {
     $exit = false;
 
     do {
-        echo "What would you like to buy?\n";
-        echo "1. Weapons\n";
-        echo "2. Armor\n";
-        echo "3. Leave store\n";
+        echo render_border();
+        echo "You are in the Weapon Store.\n";
+        echo render_border();
 
-        $choice = (int)readline("Enter your choice: ");
+        echo "What would you like to buy?\n";
+        echo render_choice("W") . " Weapons\n";
+        echo render_choice("A") . " Armor\n";
+        echo render_choice("L") . " Leave store\n";
+
+        $choice = strtoupper(readline("Enter your choice: "));
 
         switch ($choice) {
-            case 1:
+            case 'W':
                 display_inventory("Weapons", $playerInfo);
                 break;
-            case 2:
+            case 'A':
                 display_inventory("Armor", $playerInfo);
                 break;
-            case 3:
+            case 'L':
                 echo "Leaving the store.\n";
                 $exit = true;
                 break;
@@ -337,11 +288,13 @@ function display_inventory($category, &$playerInfo) {
         }
 
         // Build a list of valid options and print the inventory
+        echo render_border();
+        echo "Available $category for purchase:\n";
         foreach ($inventory as $key => $item) {
             $validOptions[] = $key + 1;
-            echo ($key + 1) . ". " . $item['Name'] . " - Cost: " . $item['Cost'] . " gold\n";
+            echo render_choice($key + 1) . " {$item['Name']} - Cost: {$item['Cost']} gold\n";
         }
-        $validOptions[] = 'back';
+        echo render_border();
 
         do {
             echo "Enter the number of the $category you want to purchase (or 'R' to return): ";
@@ -357,6 +310,12 @@ function display_inventory($category, &$playerInfo) {
 
             if ($choice > 0 && $choice <= count($inventory)) {
                 $selectedItem = $inventory[$choice - 1];
+
+                if (isset($playerInfo[$category]) && $playerInfo[$category]['ID'] === $selectedItem['ID']) {
+                    echo "You already own {$selectedItem['Name']}. Choose another item or 'R' to return.\n";
+                    break;
+                }
+
                 $cost = $selectedItem['Cost'];
 
                 if ($playerInfo['gold'] >= $cost) {
@@ -365,7 +324,7 @@ function display_inventory($category, &$playerInfo) {
                     echo "You purchased a {$selectedItem['Name']} for {$cost} gold!\n";
                     $exitInventory = true;
                 } else {
-                    echo "You don't have enough gold to purchase this item. Please choose another item or 'R' to return.\n";
+                    echo "You don't have enough gold to purchase this item. Choose another item or 'R' to return.\n";
                 }
             } else {
                 echo "Invalid choice. Please select a valid option.\n";

@@ -2,12 +2,13 @@
 
 include 'functions.php';
 include 'weapons.php';
+include 'render.php';
 
 // Initializing the player
 $playerInfo = [];
 $validChoice = true;
 
-banner();
+render_banner();
 
 do {
     echo "Please make a choice\n";
