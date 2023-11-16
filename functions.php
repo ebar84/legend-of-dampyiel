@@ -22,8 +22,13 @@ function new_game(&$playerInfo) {
     $playerInfo['bank'] = 0;
     $playerInfo['attack'] = 1;
     $playerInfo['defense'] = 1;
-    $playerInfo['weapon'] = 1;
-    $playerInfo['armor'] = 1;
+
+    $weapons = load_item('weapons', 1);
+    $playerInfo['Weapons'] = $weapons;
+
+    $armor = load_item('armor', 1);
+    $playerInfo['Armor'] = $armor;
+
     $playerInfo['inventory'] = [];
 
     save_game($playerInfo, FALSE);
@@ -88,10 +93,10 @@ function view_stats($playerInfo) {
     echo "Attack: " . $playerInfo['attack'] . "\n";
     echo "Defense: " . $playerInfo['defense'] . "\n";
 
-    $weapon = load_item('weapons', $playerInfo['weapon']);
+    $weapon = $playerInfo['Weapons'];
     echo "Weapon: " . $weapon['Name'] . "\n";
 
-    $armor = load_item('armor', $playerInfo['armor']);
+    $armor = $playerInfo['Armor'];
     echo "Armor: " . $armor['Name'] . "\n";
 }
 
@@ -166,7 +171,7 @@ function enter_world(&$playerInfo) {
         render_border() . "The streets are crowded with mercenaries, thieves, and other unsavory types.\n\n" .
         render_choice("F") . "ight at the Arena\t\t\t" .
         render_choice("M") . "aximus Death Store\n" .
-        render_choice("Y") . "e Olde Inn\t\t\t\t" .
+        render_choice("I") . "mperium Inn\t\t\t\t" .
         render_choice("T") . "rain with your Master\n" .
         render_choice("C") . "hallenge the legendary Dampyiel\t" .
         render_choice("V") . "iew Stats\t\n" .
@@ -198,9 +203,9 @@ function enter_world(&$playerInfo) {
                     weapon_store($playerInfo);
                     echo "You chose Maximus Death Store.\n";
                     break;
-                case 'Y':
+                case 'I':
                     // inn function
-                    echo "You chose Ye Olde Inn.\n";
+                    echo "You chose the Imperium Inn.\n";
                     break;
                 case 'T':
                     // train function
@@ -323,10 +328,21 @@ function display_inventory($category, &$playerInfo) {
                 $cost = $selectedItem['Cost'];
 
                 if ($playerInfo['gold'] >= $cost) {
-                    $playerInfo['gold'] -= $cost;
-                    $playerInfo[$category] = $selectedItem;
-                    echo "You purchased a {$selectedItem['Name']} for {$cost} gold!\n";
-                    $exitInventory = true;
+                    echo "Are you sure you want to sell your {$playerInfo[$category]['Name']} for {$playerInfo[$category]['Sell Cost']} gold and buy {$selectedItem['Name']}? (yes/no): ";
+                    $confirmation = strtolower(readline());
+
+                    if ($confirmation === 'yes') {
+                        $playerInfo['gold'] += $playerInfo[$category]['Sell Cost'];
+
+                        $playerInfo['gold'] -= $selectedItem['Cost'];
+
+                        $playerInfo[$category] = $selectedItem;
+
+                        echo "You sold your {$playerInfo[$category]['Name']} for {$playerInfo[$category]['Sell Cost']} gold and bought {$selectedItem['Name']} for {$selectedItem['Cost']} gold!\n";
+                        $exitInventory = true;
+                    } else {
+                        echo "Transaction canceled. Choose another item or 'R' to return.\n";
+                    }
                 } else {
                     echo "You don't have enough gold to purchase this item. Choose another item or 'R' to return.\n";
                 }
@@ -336,6 +352,7 @@ function display_inventory($category, &$playerInfo) {
         } while (!$exitInventory);
     } while (!$exitInventory);
 }
+
 
 function load_item($type, $findItem = 0) {
   $items = json_decode(file_get_contents($type. '.json'), TRUE);
