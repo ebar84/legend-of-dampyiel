@@ -22,13 +22,8 @@ function new_game(&$playerInfo) {
     $playerInfo['bank'] = 0;
     $playerInfo['attack'] = 1;
     $playerInfo['defense'] = 1;
-
-    $weapons = load_item('weapons', 1);
-    $playerInfo['Weapons'] = $weapons;
-
-    $armor = load_item('armor', 1);
-    $playerInfo['Armor'] = $armor;
-
+    $playerInfo['weapon'] = 1;
+    $playerInfo['armor'] = 1;
     $playerInfo['inventory'] = [];
 
     save_game($playerInfo, FALSE);
@@ -49,7 +44,7 @@ function load_game(&$playerInfo, $prompt = TRUE) {
 
   $load_game = TRUE;
 
-  if (!file_exists('player.json')) {
+  if (!file_exists('data/player.json')) {
     echo "No saved game found. Starting a new game.\n";
     new_game($playerInfo);
   }
@@ -66,7 +61,7 @@ function load_game(&$playerInfo, $prompt = TRUE) {
   }
 
   if ($load_game) {
-    $playerInfo = json_decode(file_get_contents('player.json'), TRUE);
+    $playerInfo = json_decode(file_get_contents('data/player.json'), TRUE);
     echo "Game loaded successfully!\n";
     enter_world($playerInfo);
   }
@@ -93,11 +88,13 @@ function view_stats($playerInfo) {
     echo "Attack: " . $playerInfo['attack'] . "\n";
     echo "Defense: " . $playerInfo['defense'] . "\n";
 
-    $weapon = $playerInfo['Weapons'];
+    $weapon = load_item('weapon', $playerInfo['weapon']);
     echo "Weapon: " . $weapon['Name'] . "\n";
 
-    $armor = $playerInfo['Armor'];
+    $armor = load_item('armor', $playerInfo['armor']);
     echo "Armor: " . $armor['Name'] . "\n";
+
+    any_key();
 }
 
 
@@ -126,7 +123,7 @@ function save_game($playerInfo, $prompt = TRUE) {
 
   if ($save_game) {
     $playerData = json_encode($playerInfo, JSON_PRETTY_PRINT);
-    file_put_contents('player.json', $playerData);
+    file_put_contents('data/player.json', $playerData);
     echo "Game saved successfully!\n";
   }
 }
@@ -176,7 +173,7 @@ function enter_world(&$playerInfo) {
         render_choice("C") . "hallenge the legendary Dampyiel\t" .
         render_choice("V") . "iew Stats\t\n" .
         render_choice("L") . "oad Game\t\t\t\t" .
-        render_choice("S") . "ave Game\t\t\t\t" .
+        render_choice("S") . "ave Game\t\t\t\t\n" .
         render_choice("Q") . "uit Game\n" .
         render_border();
 
@@ -228,6 +225,8 @@ function enter_world(&$playerInfo) {
                 case 'Q':
                     quit_game();
             }
+
+          echo $fullMenu;
         }
     } while ($choice !== 'Q');
 }
@@ -255,10 +254,10 @@ function weapon_store(&$playerInfo) {
 
         switch ($choice) {
             case 'W':
-                display_inventory("Weapons", $playerInfo);
+                display_inventory("weapon", $playerInfo);
                 break;
             case 'A':
-                display_inventory("Armor", $playerInfo);
+                display_inventory("armor", $playerInfo);
                 break;
             case 'L':
                 echo "Leaving the store.\n";
@@ -282,80 +281,74 @@ function weapon_store(&$playerInfo) {
  * @return void
  */
 function display_inventory($category, &$playerInfo) {
-    $exitInventory = false;
+  $exitInventory = false;
+  $validOptions = [];
+  $inventory = load_item($category);
 
-    do {
-        $validOptions = [];
+  // Build a list of valid options and print the inventory
+  $fullMenu = render_border();
+  $fullMenu .= "Available $category for purchase:\n";
+  foreach ($inventory as $key => $item) {
+    $validOptions[] = $key + 1;
+    $fullMenu .= render_choice($key + 1) . " {$item['Name']} - Cost: {$item['Cost']} gold\n";
+  }
+  $fullMenu .= render_border();
 
-        if ($category === 'Weapons') {
-            $inventory = load_item('weapons');
-        } elseif ($category === 'Armor') {
-            $inventory = load_item('armor');
+  do {
+    echo $fullMenu;
+    echo "Enter the number of the $category you want to purchase (or 'R' to return): ";
+    $choice = strtolower(readline());
+
+    $message = '';
+
+    if ($choice === 'r') {
+      echo "Returning to the previous menu.\n";
+      break;
+    }
+
+    $choice = (int) $choice;
+
+    if (in_array($choice, $validOptions)) {
+      $selectedItem = $inventory[$choice - 1];
+
+      if (isset($playerInfo[$category]) && $playerInfo[$category] === $selectedItem['ID']) {
+        $message = "You already own {$selectedItem['Name']}. Choose another item or 'R' to return.\n";
+      }
+
+      $cost = $selectedItem['Cost'];
+
+      if (!$message && $playerInfo['gold'] >= $cost) {
+        $playerWeapon = load_item($category, $playerInfo[$category]);
+
+        echo "Are you sure you want to sell your {$playerWeapon['Name']} for {$playerWeapon['Sell Cost']} gold and buy {$selectedItem['Name']}? (yes/no): ";
+        $confirmation = strtolower(readline());
+
+        if ($confirmation === 'yes') {
+          $playerInfo['gold'] += $playerWeapon['Sell Cost'];
+          $playerInfo['gold'] -= $selectedItem['Cost'];
+
+          $playerInfo[$category] = $selectedItem['ID'];
+
+          echo "You sold your {$playerWeapon['Name']} for {$playerWeapon['Sell Cost']} gold and bought {$selectedItem['Name']} for {$selectedItem['Cost']} gold!\n";
+          $exitInventory = true;
         } else {
-            echo "Invalid category.\n";
-            return;
+          $message = "Transaction canceled. Choose another item or 'R' to return.\n";
         }
+      } elseif (!$message && $playerInfo['gold'] < $cost) {
+        $message = "You don't have enough gold to purchase this item. Choose another item or 'R' to return.\n";
+      }
+    } else {
+      $message = "Invalid choice. Please select a valid option.\n";
+    }
 
-        // Build a list of valid options and print the inventory
-        echo render_border();
-        echo "Available $category for purchase:\n";
-        foreach ($inventory as $key => $item) {
-            $validOptions[] = $key + 1;
-            echo render_choice($key + 1) . " {$item['Name']} - Cost: {$item['Cost']} gold\n";
-        }
-        echo render_border();
+    echo $message;
+    any_key();
 
-        do {
-            echo "Enter the number of the $category you want to purchase (or 'R' to return): ";
-            $choice = strtolower(readline());
-
-            if ($choice === 'r') {
-                echo "Returning to the previous menu.\n";
-                $exitInventory = true;
-                break;
-            }
-
-            $choice = (int) $choice;
-
-            if ($choice > 0 && $choice <= count($inventory)) {
-                $selectedItem = $inventory[$choice - 1];
-
-                if (isset($playerInfo[$category]) && $playerInfo[$category]['ID'] === $selectedItem['ID']) {
-                    echo "You already own {$selectedItem['Name']}. Choose another item or 'R' to return.\n";
-                    break;
-                }
-
-                $cost = $selectedItem['Cost'];
-
-                if ($playerInfo['gold'] >= $cost) {
-                    echo "Are you sure you want to sell your {$playerInfo[$category]['Name']} for {$playerInfo[$category]['Sell Cost']} gold and buy {$selectedItem['Name']}? (yes/no): ";
-                    $confirmation = strtolower(readline());
-
-                    if ($confirmation === 'yes') {
-                        $playerInfo['gold'] += $playerInfo[$category]['Sell Cost'];
-
-                        $playerInfo['gold'] -= $selectedItem['Cost'];
-
-                        $playerInfo[$category] = $selectedItem;
-
-                        echo "You sold your {$playerInfo[$category]['Name']} for {$playerInfo[$category]['Sell Cost']} gold and bought {$selectedItem['Name']} for {$selectedItem['Cost']} gold!\n";
-                        $exitInventory = true;
-                    } else {
-                        echo "Transaction canceled. Choose another item or 'R' to return.\n";
-                    }
-                } else {
-                    echo "You don't have enough gold to purchase this item. Choose another item or 'R' to return.\n";
-                }
-            } else {
-                echo "Invalid choice. Please select a valid option.\n";
-            }
-        } while (!$exitInventory);
-    } while (!$exitInventory);
+  } while (!$exitInventory);
 }
 
-
 function load_item($type, $findItem = 0) {
-  $items = json_decode(file_get_contents($type. '.json'), TRUE);
+  $items = json_decode(file_get_contents('data/' . $type. '.json'), TRUE);
 
   if ($findItem == 0) {
     return $items;
@@ -367,4 +360,9 @@ function load_item($type, $findItem = 0) {
       }
     }
   }
+}
+
+function any_key() {
+  echo "Press enter to continue...";
+  readline();
 }

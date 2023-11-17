@@ -61,6 +61,6 @@ $weapons = [
 
 $weaponsJson = json_encode($weapons, JSON_PRETTY_PRINT);
 
-file_put_contents('weapons.json', $weaponsJson);
+file_put_contents('../data/weapon.json', $weaponsJson);
 
 echo "Weapons data has been saved to weapons.json\n";

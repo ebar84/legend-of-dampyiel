@@ -1,7 +1,6 @@
 <?php
 
 include 'functions.php';
-include 'weapons.php';
 include 'render.php';
 
 // Initializing the player
