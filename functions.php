@@ -76,23 +76,25 @@ function load_game(&$playerInfo, $prompt = TRUE) {
  * @return void
  */
 function view_stats($playerInfo) {
-    echo "Player Name: " . $playerInfo['name'] . "\n";
-    echo "Level: " . $playerInfo['level'] . "\n";
-    echo "HP: " . $playerInfo['hp'] . "\n";
-    echo "MP: " . $playerInfo['mp'] . "\n";
-    echo "Experience: " . $playerInfo['experience'] . "\n";
-    echo "Arena Fights: " . $playerInfo['arena_fights'] . "\n";
-    echo "Gold: " . $playerInfo['gold'] . "\n";
-    echo "Charm: " . $playerInfo['charm'] . "\n";
-    echo "Bank: " . $playerInfo['bank'] . "\n";
-    echo "Attack: " . $playerInfo['attack'] . "\n";
-    echo "Defense: " . $playerInfo['defense'] . "\n";
+    echo render_border();
+    echo render_white("Player Name: ") . $playerInfo['name'] . "\n";
+    echo render_white("Level: ") . $playerInfo['level'] . "\n";
+    echo render_white("HP: ") . $playerInfo['hp'] . "\n";
+    echo render_white("MP: ") . $playerInfo['mp'] . "\n";
+    echo render_white("Experience: ") . $playerInfo['experience'] . "\n";
+    echo render_white("Arena Fights: ")  . $playerInfo['arena_fights'] . "\n";
+    echo render_white("Gold: ") . $playerInfo['gold'] . "\n";
+    echo render_white("Charm: ") . $playerInfo['charm'] . "\n";
+    echo render_white("Bank: ") . $playerInfo['bank'] . "\n";
+    echo render_white("Attack: ") . $playerInfo['attack'] . "\n";
+    echo render_white("Defense: ") . $playerInfo['defense'] . "\n";
 
     $weapon = load_item('weapon', $playerInfo['weapon']);
-    echo "Weapon: " . $weapon['Name'] . "\n";
+    echo render_white("Weapon: ") . $weapon['Name'] . "\n";
 
     $armor = load_item('armor', $playerInfo['armor']);
-    echo "Armor: " . $armor['Name'] . "\n";
+    echo render_white("Armor: ") . $armor['Name'] . "\n";
+    echo render_border();
 
     any_key();
 }
@@ -161,7 +163,7 @@ function quit_game($prompt = true) {
  * @return void
  */
 function enter_world(&$playerInfo) {
-    $validOptions = ['F', 'M', 'Y', 'T', 'C', 'V', 'L', 'S', 'Q'];
+    $validOptions = ['F', 'M', 'I', 'T', 'C', 'V', 'L', 'S', 'Q'];
     $location = 'The Town Square';
 
     $fullMenu = render_white("\nLegend of Dampyiel - ") . $location . "\n" .
@@ -201,7 +203,7 @@ function enter_world(&$playerInfo) {
                     echo "You chose Maximus Death Store.\n";
                     break;
                 case 'I':
-                    // inn function
+                    imperium_inn($playerInfo);
                     echo "You chose the Imperium Inn.\n";
                     break;
                 case 'T':
@@ -281,71 +283,83 @@ function weapon_store(&$playerInfo) {
  * @return void
  */
 function display_inventory($category, &$playerInfo) {
-  $exitInventory = false;
-  $validOptions = [];
-  $inventory = load_item($category);
+    $exitInventory = false;
+    $validOptions = [];
+    $inventory = load_item($category);
 
-  // Build a list of valid options and print the inventory
-  $fullMenu = render_border();
-  $fullMenu .= "Available $category for purchase:\n";
-  foreach ($inventory as $key => $item) {
-    $validOptions[] = $key + 1;
-    $fullMenu .= render_choice($key + 1) . " {$item['Name']} - Cost: {$item['Cost']} gold\n";
-  }
-  $fullMenu .= render_border();
-
-  do {
-    echo $fullMenu;
-    echo "Enter the number of the $category you want to purchase (or 'R' to return): ";
-    $choice = strtolower(readline());
-
-    $message = '';
-
-    if ($choice === 'r') {
-      echo "Returning to the previous menu.\n";
-      break;
+    // Build a list of valid options and print the inventory
+    $fullMenu = render_border();
+    $fullMenu .= "Available $category for purchase:\n";
+    foreach ($inventory as $key => $item) {
+        $firstLetter = strtoupper(substr($item['Name'], 0, 1)); // Ensure the first letter is capitalized
+        $validOptions[] = $firstLetter; // Store the first letter as a valid option
+        $fullMenu .= render_choice($firstLetter) . " {$item['Name']} - Cost: {$item['Cost']} gold\n";
     }
+    $fullMenu .= render_border();
 
-    $choice = (int) $choice;
+    do {
+        echo $fullMenu;
+        echo "Enter the letter of the $category you want to purchase (or 'R' to return): ";
+        $choice = strtolower(readline());
 
-    if (in_array($choice, $validOptions)) {
-      $selectedItem = $inventory[$choice - 1];
+        $message = '';
 
-      if (isset($playerInfo[$category]) && $playerInfo[$category] === $selectedItem['ID']) {
-        $message = "You already own {$selectedItem['Name']}. Choose another item or 'R' to return.\n";
-      }
-
-      $cost = $selectedItem['Cost'];
-
-      if (!$message && $playerInfo['gold'] >= $cost) {
-        $playerWeapon = load_item($category, $playerInfo[$category]);
-
-        echo "Are you sure you want to sell your {$playerWeapon['Name']} for {$playerWeapon['Sell Cost']} gold and buy {$selectedItem['Name']}? (yes/no): ";
-        $confirmation = strtolower(readline());
-
-        if ($confirmation === 'yes') {
-          $playerInfo['gold'] += $playerWeapon['Sell Cost'];
-          $playerInfo['gold'] -= $selectedItem['Cost'];
-
-          $playerInfo[$category] = $selectedItem['ID'];
-
-          echo "You sold your {$playerWeapon['Name']} for {$playerWeapon['Sell Cost']} gold and bought {$selectedItem['Name']} for {$selectedItem['Cost']} gold!\n";
-          $exitInventory = true;
-        } else {
-          $message = "Transaction canceled. Choose another item or 'R' to return.\n";
+        if ($choice === 'r') {
+            echo "Returning to the previous menu.\n";
+            break;
         }
-      } elseif (!$message && $playerInfo['gold'] < $cost) {
-        $message = "You don't have enough gold to purchase this item. Choose another item or 'R' to return.\n";
-      }
-    } else {
-      $message = "Invalid choice. Please select a valid option.\n";
-    }
 
-    echo $message;
-    any_key();
+        if (in_array($choice, $validOptions)) {
+            $selectedItem = null;
 
-  } while (!$exitInventory);
+            // Find the item whose name starts with the chosen letter
+            foreach ($inventory as $item) {
+                if (strtoupper(substr($item['Name'], 0, 1)) === strtoupper($choice)) {
+                    $selectedItem = $item;
+                    break;
+                }
+            }
+
+            if ($selectedItem !== null) {
+                if (isset($playerInfo[$category]) && $playerInfo[$category] === $selectedItem['ID']) {
+                    $message = "You already own {$selectedItem['Name']}. Choose another item or 'R' to return.\n";
+                }
+
+                $cost = $selectedItem['Cost'];
+
+                if (!$message && $playerInfo['gold'] >= $cost) {
+                    $playerWeapon = load_item($category, $playerInfo[$category]);
+
+                    echo "Are you sure you want to sell your {$playerWeapon['Name']} for {$playerWeapon['Sell Cost']} gold and buy {$selectedItem['Name']}? (yes/no): ";
+                    $confirmation = strtolower(readline());
+
+                    if ($confirmation === 'yes') {
+                        $playerInfo['gold'] += $playerWeapon['Sell Cost'];
+                        $playerInfo['gold'] -= $selectedItem['Cost'];
+
+                        $playerInfo[$category] = $selectedItem['ID'];
+
+                        echo "You sold your {$playerWeapon['Name']} for {$playerWeapon['Sell Cost']} gold and bought {$selectedItem['Name']} for {$selectedItem['Cost']} gold!\n";
+                        $exitInventory = true;
+                    } else {
+                        $message = "Transaction canceled. Choose another item or 'R' to return.\n";
+                    }
+                } elseif (!$message && $playerInfo['gold'] < $cost) {
+                    $message = "You don't have enough gold to purchase this item. Choose another item or 'R' to return.\n";
+                }
+            } else {
+                $message = "Invalid choice. Please select a valid option.\n";
+            }
+        } else {
+            $message = "Invalid choice. Please select a valid option.\n";
+        }
+
+        echo $message;
+        any_key();
+
+    } while (!$exitInventory);
 }
+
 
 function load_item($type, $findItem = 0) {
   $items = json_decode(file_get_contents('data/' . $type. '.json'), TRUE);
@@ -365,4 +379,125 @@ function load_item($type, $findItem = 0) {
 function any_key() {
   echo "Press enter to continue...";
   readline();
+}
+//inn needs further work after battle system
+
+function imperium_inn(&$playerInfo) {
+    $validOptions = ['S', 'F', 'H', 'Q'];
+
+    echo render_border();
+    echo "Imperium Inn - {$playerInfo['name']}'s Rest\n";
+    echo render_choice("S") . "leep for the night (Cost: 20 gold)\n";
+    echo render_choice("F") . "lirt with Cecilia\n";
+    echo render_choice("H") . "ear banter from the locals\n";
+    echo render_choice("Q") . "uit the Imperium Inn\n";
+    echo render_border();
+
+    do {
+        echo "Your command, " . $playerInfo['name'] . "? : ";
+        $choice = strtoupper(readline());
+
+        if (in_array($choice, $validOptions)) {
+            switch ($choice) {
+                case 'S':
+                    sleep_at_inn($playerInfo);
+                    break;
+                case 'F':
+                    flirt_with_cecilia($playerInfo);
+                    break;
+                case 'H':
+                    hear_banter();
+                    break;
+                case 'Q':
+                    echo "Leaving the Imperium Inn.\n";
+                    break;
+            }
+        } else {
+            echo "Invalid choice. Please select a valid option.\n";
+        }
+    } while ($choice !== 'Q');
+}
+
+function sleep_at_inn(&$playerInfo) {
+    $cost = 20;
+
+    echo "Are you sure you want to sleep for the night? (Cost: {$cost} gold) (yes/no): ";
+    $confirmation = strtolower(readline());
+
+    if ($confirmation === 'yes') {
+        if ($playerInfo['gold'] >= $cost) {
+            $playerInfo['gold'] -= $cost;
+            $playerInfo['hp'] = $playerInfo['max_hp'];
+            echo "You had a good night's rest and restored your health to its maximum!\n";
+        } else {
+            echo "You don't have enough gold to afford a night's rest.\n";
+        }
+    } else {
+        echo "You decided not to sleep for the night.\n";
+    }
+}
+
+function flirt_with_cecilia(&$playerInfo) {
+    $relationshipLevel = $playerInfo['relationship'] ?? 1;
+    $costs = [10, 50, 150, 250];
+    $successChances = [75, 50, 25, 10];
+
+    if (!isset($playerInfo['relationship'])) {
+        $playerInfo['relationship'] = 1;
+    }
+
+    $currentCost = $costs[$relationshipLevel - 1];
+    $currentChance = $successChances[$relationshipLevel - 1];
+
+    echo "You approach Cecilia with a romantic gesture.\n";
+    echo "Cost: {$currentCost} gold\n";
+    echo "Success Chance: {$currentChance}%\n";
+
+    if ($playerInfo['gold'] >= $currentCost) {
+        echo "Are you sure you want to proceed? (yes/no): ";
+        $confirmation = strtolower(readline());
+
+        if ($confirmation === 'yes') {
+            $playerInfo['gold'] -= $currentCost;
+
+            $success = mt_rand(1, 100) <= $currentChance;
+
+            if ($success) {
+                echo "Cecilia responds positively to your gesture!\n";
+                echo "You feel your relationship with her has deepened.\n";
+
+                $playerInfo['relationship']++;
+
+                if ($relationshipLevel === 4) {
+                    echo "Congratulations! You've successfully proposed to Cecilia!\n";
+                    echo "You are now married!\n";
+
+                    // i'll add stat increases here
+                }
+            } else {
+                echo "Cecilia seems unresponsive to your gesture. Better luck next time!\n";
+            }
+        } else {
+            echo "You decided not to proceed with your romantic gesture.\n";
+        }
+    } else {
+        echo "You don't have enough gold to afford this romantic gesture.\n";
+    }
+}
+
+function hear_banter() {
+    $banterFile = 'data/banter.json';
+
+    if (file_exists($banterFile)) {
+        $banter = json_decode(file_get_contents($banterFile), true);
+
+        if (is_array($banter) && !empty($banter)) {
+            $randomIndex = array_rand($banter);
+            echo "Local Banter: {$banter[$randomIndex]}\n";
+        } else {
+            echo "No banter available.\n";
+        }
+    } else {
+        echo "No banter file found.\n";
+    }
 }
