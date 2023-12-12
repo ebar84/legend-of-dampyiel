@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "name": "Goblin",
+    "hp": 15,
+    "attack": 5,
+    "defense": 2,
+    "gold_reward": 10
+  },
+  {
+    "id": 2,
+    "name": "Orc",
+    "hp": 25,
+    "attack": 8,
+    "defense": 4,
+    "gold_reward": 20
+  }
+]

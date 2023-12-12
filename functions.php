@@ -14,7 +14,9 @@ function new_game(&$playerInfo) {
     $playerInfo['name'] = readline("Welcome to your new adventure! Enter your name: ");
     $playerInfo['level'] = 1;
     $playerInfo['hp'] = 10;
+    $playerInfo['max_hp'] = 10; // Set the initial max_hp value
     $playerInfo['mp'] = 10;
+    $playerInfo['max_mp'] = 10; //Set the initial max_mp value
     $playerInfo['experience'] = 0;
     $playerInfo['arena_fights'] = 25;
     $playerInfo['gold'] = 100;
@@ -24,6 +26,7 @@ function new_game(&$playerInfo) {
     $playerInfo['defense'] = 1;
     $playerInfo['weapon'] = 1;
     $playerInfo['armor'] = 1;
+    $playerInfo['relationship'] = 1;
     $playerInfo['inventory'] = [];
 
     save_game($playerInfo, FALSE);
@@ -31,6 +34,7 @@ function new_game(&$playerInfo) {
     echo "Your character, {$playerInfo['name']}, has been created and saved!\n";
     enter_world($playerInfo);
 }
+
 
 /**
  * Loads a saved game.
@@ -79,8 +83,8 @@ function view_stats($playerInfo) {
     echo render_border();
     echo render_white("Player Name: ") . $playerInfo['name'] . "\n";
     echo render_white("Level: ") . $playerInfo['level'] . "\n";
-    echo render_white("HP: ") . $playerInfo['hp'] . "\n";
-    echo render_white("MP: ") . $playerInfo['mp'] . "\n";
+    echo render_white("HP: ") . $playerInfo['hp'] . "/" . $playerInfo['max_hp'] . "\n"; // Display max_hp
+    echo render_white("MP: ") . $playerInfo['mp'] . "/" . $playerInfo['max_mp'] . "\n";
     echo render_white("Experience: ") . $playerInfo['experience'] . "\n";
     echo render_white("Arena Fights: ")  . $playerInfo['arena_fights'] . "\n";
     echo render_white("Gold: ") . $playerInfo['gold'] . "\n";
@@ -88,6 +92,7 @@ function view_stats($playerInfo) {
     echo render_white("Bank: ") . $playerInfo['bank'] . "\n";
     echo render_white("Attack: ") . $playerInfo['attack'] . "\n";
     echo render_white("Defense: ") . $playerInfo['defense'] . "\n";
+    echo render_white("Relationship: ") . $playerInfo['relationship'] . "\n";
 
     $weapon = load_item('weapon', $playerInfo['weapon']);
     echo render_white("Weapon: ") . $weapon['Name'] . "\n";
@@ -195,7 +200,7 @@ function enter_world(&$playerInfo) {
         if (in_array($choice, $validOptions)) {
             switch ($choice) {
                 case 'F':
-                    // fight function
+                    enter_arena($playerInfo);
                     echo "You chose to fight at the Arena.\n";
                     break;
                 case 'M':
@@ -380,7 +385,32 @@ function any_key() {
   echo "Press enter to continue...";
   readline();
 }
-//inn needs further work after battle system
+
+
+function calculate_experience_required($currentLevel) {
+    return $currentLevel * 100;
+}
+
+function gain_experience(&$playerInfo, $experience) {
+    $playerInfo['experience'] += $experience;
+
+    // Check if the player has gained a level
+    if ($playerInfo['experience'] >= calculate_experience_required($playerInfo['level'])) {
+        $playerInfo['experience'] = 0;
+        $playerInfo['level']++;
+        $playerInfo['max_hp'] += 5;
+        $playerInfo['max_mp'] += 5;
+        $playerInfo['attack'] += 2;
+        $playerInfo['defense'] += 2;
+
+        echo "Congratulations! You've reached Level {$playerInfo['level']}!\n";
+        echo "Your stats have been upgraded:\n";
+        echo "Max HP: +5\n";
+        echo "Max MP: +5\n";
+        echo "Attack: +2\n";
+        echo "Defense: +2\n";
+    }
+}
 
 function imperium_inn(&$playerInfo) {
     $validOptions = ['S', 'F', 'H', 'Q'];
@@ -428,6 +458,7 @@ function sleep_at_inn(&$playerInfo) {
         if ($playerInfo['gold'] >= $cost) {
             $playerInfo['gold'] -= $cost;
             $playerInfo['hp'] = $playerInfo['max_hp'];
+            $playerInfo['mp'] = $playerInfo['max_mp'];
             echo "You had a good night's rest and restored your health to its maximum!\n";
         } else {
             echo "You don't have enough gold to afford a night's rest.\n";
@@ -472,7 +503,10 @@ function flirt_with_cecilia(&$playerInfo) {
                     echo "Congratulations! You've successfully proposed to Cecilia!\n";
                     echo "You are now married!\n";
 
-                    // i'll add stat increases here
+                    $playerInfo['max_hp'] += 20;
+                    $playerInfo['max_mp'] += 20;
+                    $playerInfo['attack'] += 5;
+                    $playerInfo['defense'] += 5;
                 }
             } else {
                 echo "Cecilia seems unresponsive to your gesture. Better luck next time!\n";
@@ -500,4 +534,131 @@ function hear_banter() {
     } else {
         echo "No banter file found.\n";
     }
+}
+
+function enter_arena(&$playerInfo) {
+    $validOptions = ['E', 'V', 'L'];
+
+    do {
+        echo render_border();
+        echo "Colosseum - Fight for Glory!\n";
+        echo render_choice("E") . "nter the colosseum\n";
+        echo render_choice("V") . "iew current combatants list\n";
+        echo render_choice("L") . "eave\n";
+        echo render_border();
+
+        echo "Your command, " . $playerInfo['name'] . "? : ";
+        $choice = strtoupper(readline());
+
+        if (in_array($choice, $validOptions)) {
+            switch ($choice) {
+                case 'E':
+                    initiate_arena_fight($playerInfo);
+                    break;
+                case 'V':
+                    view_combatants_list();
+                    break;
+                case 'L':
+                    echo "Leaving the colosseum.\n";
+                    break;
+            }
+        } else {
+            echo "Invalid choice. Please select a valid option.\n";
+        }
+    } while ($choice !== 'L');
+}
+
+function initiate_arena_fight(&$playerInfo) {
+    $enemies = json_decode(file_get_contents('data/enemies.json'), true);
+
+    // Get a random enemy
+    $randomIndex = array_rand($enemies);
+    $enemy = $enemies[$randomIndex];
+
+    echo "You are fighting {$enemy['name']}!\n";
+    echo "Your Hitpoints: {$playerInfo['hp']}\n";
+    echo "{$enemy['name']} Hitpoints: {$enemy['hp']}\n";
+
+    do {
+        echo "Your command, " . $playerInfo['name'] . "? (A)ttack or (R)un: ";
+        $choice = strtoupper(readline());
+
+        switch ($choice) {
+            case 'A':
+                player_attack($playerInfo, $enemy);
+                if ($enemy['hp'] > 0) {
+                    enemy_attack($playerInfo, $enemy);
+                }
+                break;
+            case 'R':
+                echo "You chose to run. Coward!\n";
+                break;
+            default:
+                echo "Invalid choice. Please select a valid option.\n";
+        }
+
+    } while ($choice !== 'R' && $playerInfo['hp'] > 0 && $enemy['hp'] > 0);
+
+    if ($playerInfo['hp'] <= 0) {
+        echo "You were defeated by {$enemy['name']}!\n";
+        revive_player($playerInfo);
+    } elseif ($enemy['hp'] <= 0) {
+        echo "Congratulations! You defeated {$enemy['name']} and earned {$enemy['gold_reward']} gold!\n";
+        $playerInfo['gold'] += $enemy['gold_reward'];
+        gain_experience($playerInfo, calculate_experience_required($playerInfo['level']));
+    }
+}
+
+function player_attack(&$playerInfo, &$enemy) {
+    $playerWeapon = load_item('weapon', $playerInfo['weapon']);
+    $playerAttack = (($playerInfo['attack'] + $playerWeapon['Attack']) - $enemy['defense']) * mt_rand(80, 120) / 100;
+
+    echo "You attack {$enemy['name']} with {$playerWeapon['Name']} for {$playerAttack} damage!\n";
+    $enemy['hp'] -= $playerAttack;
+}
+
+function enemy_attack(&$playerInfo, &$enemy) {
+    $playerArmor = load_item('armor', $playerInfo['armor']);
+    $enemyAttack = ($enemy['attack'] - ($playerInfo['defense'] + $playerArmor['Defense'])) * mt_rand(80, 120) / 100;
+
+    echo "{$enemy['name']} attacks you. Your {$playerArmor['Name']} absorbs some damage!\n";
+    echo "{$enemy['name']} deals {$enemyAttack} damage to you!\n";
+
+    $playerInfo['hp'] -= $enemyAttack;
+}
+
+function view_combatants_list() {
+    $enemiesFile = 'data/enemies.json';
+
+    if (!file_exists($enemiesFile)) {
+        echo "Error: Enemies file not found.\n";
+        return;
+    }
+
+    $enemies = json_decode(file_get_contents($enemiesFile), true);
+
+    if (!is_array($enemies) || empty($enemies)) {
+        echo "No enemies available.\n";
+        return;
+    }
+
+    echo render_border();
+    echo "Current Combatants List\n";
+    echo render_border();
+
+    foreach ($enemies as $enemy) {
+        echo "{$enemy['name']} - HP: {$enemy['hp']}, Attack: {$enemy['attack']}, Defense: {$enemy['defense']}, Gold Reward: {$enemy['gold_reward']}\n";
+    }
+
+    echo render_border();
+    any_key();
+}
+
+
+function revive_player(&$playerInfo) {
+    $reviveCost = max(20, intval(0.25 * $playerInfo['gold']));
+    $playerInfo['hp'] = 1;
+    $playerInfo['gold'] -= $reviveCost;
+
+    echo "You have been revived with 1 HP, but it cost you {$reviveCost} gold!\n";
 }
